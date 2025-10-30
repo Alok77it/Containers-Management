@@ -1,5 +1,5 @@
 ###############################################################
-# vPopular Hosting Container Image
+# vStart Hosting Container Image
 # --------------------------------------------------------------
 # Ubuntu 22.04 + Nginx + PHP + MYSQL + SSH
 # Features:
@@ -11,7 +11,7 @@
 FROM ubuntu:22.04
 
 LABEL maintainer="YouStable"
-LABEL description="vPopular Hosting Plan - 4vCPU, 16GB RAM, 200GB SSD"
+LABEL description="vStart Hosting Plan - 1vCPU, 4GB RAM, 50GB SSD"
 
 # Avoid timezone prompts during installations
 ENV DEBIAN_FRONTEND=noninteractive
