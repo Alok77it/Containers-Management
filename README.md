@@ -159,12 +159,6 @@ We welcome pull requests and ideas. Please open issues for features, bugs, or su
 
 ---
 
-## 📄 License
-
-MIT License
-
----
-
 ## 💬 Contact
 
 Questions or feedback?  
