@@ -8,33 +8,36 @@ A fully automated, scriptable Docker container hosting solution for modern web h
 
 ## 📝 Overview
 
-YouStable’s system allows seamless creation, management, and backup of Docker containers mapped to multiple hosting plans:
+YouStable’s system enables seamless creation, management, and backup of Docker containers for multiple hosting plans:
 
 - **Ubuntu 22.04**
 - **Nginx + PHP + MySQL**
 - **SSH access** (root & user)
 - **Supervisor** for service orchestration
 - **Persistent Volumes** for web files & databases
-
-All workflows are orchestrated via robust Python scripts.
+- **Random Ports:** Containers are assigned random SSH ports for security and traffic isolation.
+- **Nginx DNS & Reverse Proxy:** Nginx maps domain names and routes HTTP/HTTPS traffic to the correct container and port.
+- **Basic Monitoring:** Python scripts monitor container health, resource usage, and service status.
+- **Package Installation:** Install packages in containers using name and URL for flexibility and automation.
 
 ---
 
 ## 🗂️ Directory Structure
 
 ```
-/Container
-├── Dockerfiles
-│   ├── Dockerfile.vStart
-│   ├── Dockerfile.vProfessional
-│   ├── Dockerfile.vPopular
-│   ├── Dockerfile.vStable
-│   ├── setup_user.sh           # Dynamic user creation script
-│   └── supervisord.conf        # Supervisor config
-├── scripts
-│   └── create_container.py     # Main container creation script
-├── backups                     # Host directory for backups
-└── logs                        # Container logs
+DockerFiles/
+├── Dockerfile.vPopular
+├── Dockerfile.vProfessional
+├── Dockerfile.vStable
+├── Dockerfile.vStart
+├── setup_user.sh           # Dynamic user creation script
+├── supervisord.conf        # Supervisor config for services
+
+scripts/
+├── backup.sh               # Backup script for web files and databases
+├── create_container.py     # Main container creation script
+├── monitor.py              # Python-based monitoring script
+├── package.py              # Script for installing packages by name & URL
 ```
 
 ---
@@ -73,15 +76,23 @@ EXPOSE 22 80 443 3306
 
 ---
 
-## 🐍 Python Automation: `create_container.py`
+## 🐍 Python Automation & Scripts
 
-- Accepts plan, domain, container name, username, password.
-- Builds Docker image if not present.
-- Creates persistent volumes:
-  - `/srv/{cname}/www` (website files)
-  - `{cname}_mysql_data` (MySQL data)
-- Runs container with resource limits, assigns random SSH port.
-- Outputs credentials & endpoints for users.
+- **create_container.py:**  
+  Accepts plan, domain, container name, username, and password.
+  - Builds Docker image if absent.
+  - Creates persistent volumes for website files and MySQL data.
+  - Runs containers with CPU/memory limits and assigns a **random SSH port**.
+  - Outputs credentials and endpoints for users.
+
+- **monitor.py:**  
+  Monitors container health, resource usage, and service status using Python.
+
+- **package.py:**  
+  Installs additional packages inside containers using their name and URL.
+
+- **backup.sh:**  
+  Backs up web files and databases.
 
 ### **Docker Run Template**
 ```bash
@@ -100,6 +111,13 @@ docker run -d \
   -e PASSWORD={password} \
   hosting:{plan}
 ```
+
+---
+
+## 🌐 Nginx DNS & Reverse Proxy
+
+- **DNS Management:** Automated updates map domains to the correct container endpoints.
+- **Reverse Proxy:** Nginx routes incoming traffic to the correct container and port, supporting random port assignment.
 
 ---
 
