@@ -1,0 +1,42 @@
+###############################################################
+# vProfessional Hosting Container Image
+# --------------------------------------------------------------
+# Ubuntu 22.04 + Nginx + PHP + MYSQL + SSH
+# Features:
+    # - Root login enabled (password: youstable@123)
+    # - User Account dynamically created at runtime
+    # - Supervisor manages all core services
+################################################################
+
+FROM ubuntu:22.04
+
+LABEL maintainer="YouStable"
+LABEL description="vProfessional Hosting Plan - 2vCPU, 8GB RAM, 100GB SSD"
+
+# Avoid timezone prompts during installations
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install required system packages
+RUN apt update && apt install -y \
+    nginx mysql-server php php-fpm php-mysql php-cli php-curl php-zip \
+    php-gd php-mbstring php-xml php-bcmath unzip curl sudo supervisor \
+    openssh-server && \
+    apt clean && rm -rf /var/lib/apt/lists/*
+
+
+# Create SSH run directory
+RUN mkdir /var/run/sshd
+
+# Copy supervisor and setup scripts
+COPY supervisord.conf /etc/supervisor/conf.d/supervisor.conf
+COPY setup_user.sh /usr/local/bin/setup_user.sh
+RUN chmod +x /usr/local/bin/setup_user.sh
+
+# Set root password for emergency SSH Access
+RUN echo "root:youstable@123" | chpasswd
+
+# Expose services ports
+EXPOSE 22 80 443 3306
+
+# Start Script that configures containers user and launches serverices
+CMD ["/usr/local/bin/setup_user.sh"]
